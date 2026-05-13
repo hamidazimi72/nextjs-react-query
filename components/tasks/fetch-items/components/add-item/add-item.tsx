@@ -17,7 +17,7 @@ export const AddItem = () => {
   };
 
   return (
-    <button className="p-2 rounded bg-neutral-200 w-24 cursor-pointer" onClick={renderAddItem}>
+    <button className="p-2 rounded bg-green-200 text-green-600 w-24 cursor-pointer" onClick={renderAddItem}>
       افزودن
     </button>
   );

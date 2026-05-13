@@ -4,10 +4,8 @@ import * as API from "@/api";
 import * as Types from "@/types";
 
 export const useCreateTask = (options?: UseMutationOptions<Types.Task.FetchAllDto, Error, string>) => {
-  let userId: Types.User.FetchAllDto["id"];
-  if (typeof window !== "undefined") {
-    userId = JSON.parse(localStorage?.getItem("userInfo") || "{}")?.id;
-  }
+  const userId: Types.User.FetchAllDto["id"] =
+    typeof window !== "undefined" ? JSON.parse(localStorage?.getItem("userInfo") || "{}")?.id : "";
 
   const queryClient = useQueryClient();
 

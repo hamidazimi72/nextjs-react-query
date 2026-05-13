@@ -5,13 +5,17 @@ import { useState } from "react";
 import { Pagination } from "@/components/attom";
 import { useGetTasks } from "@/hooks/task";
 
-import { AddItem, DeleteItem, ToggleItem, UpdateItem } from "./components";
+import { AddItem, DeleteItem, Filter, ToggleItem, UpdateItem } from "./components";
 
 export const FetchItems = () => {
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(3);
+  const [filterForm, setFilterForm] = useState<{ title: string; selectedStatus: string }>({
+    title: "",
+    selectedStatus: "",
+  });
 
-  const { data } = useGetTasks({ page, perPage });
+  const { data } = useGetTasks({ page, perPage, title: filterForm?.title, status: filterForm?.selectedStatus });
 
   return (
     <div>
@@ -19,6 +23,8 @@ export const FetchItems = () => {
         <h2 className="text-2xl font-medium">لیست تسک‌ها</h2>
         <AddItem />
       </div>
+
+      <Filter form={filterForm} setForm={setFilterForm} page={page} perPage={perPage} />
 
       <div className="flex flex-col border border-neutral-300 rounded overflow-hidden mb-4">
         <div className="grid grid-cols-12 border-b border-b-neutral-300 bg-neutral-100 *:text-center *:p-2">
