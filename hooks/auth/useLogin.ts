@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import { useMutation, UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
 import * as API from "@/api";
@@ -7,27 +8,29 @@ type VariablesType = { cellphone: string; password: string };
 
 export const useLogin = (
   onSuccess?: () => void,
-  options?: UseMutationOptions<Types.User.FetchAllDto[], Error, VariablesType>,
+  options?: UseMutationOptions<AxiosResponse<Types.User.FetchAllDto[]>, Error, VariablesType>,
 ) => {
   const queryClient = useQueryClient();
 
-  return useMutation<Types.User.FetchAllDto[], Error, VariablesType>({
-    mutationFn: () => API.User.fetchAll(),
+  return useMutation<AxiosResponse<Types.User.FetchAllDto[]>, Error, VariablesType>({
+    mutationFn: ({ cellphone }) => API.User.fetchAll({ cellphone: +cellphone }),
     onSuccess: (res, variables) => {
-      const findedUser = res.find((u) => u?.cellphone === +variables?.cellphone);
+      const list = res?.data;
 
-      if (!findedUser) {
+      if (!list.length) {
         console.log("شماره موبایل در سیستم وجود ندارد!");
         return;
       }
 
-      if (findedUser?.password !== variables?.password) {
+      const user = list[0];
+
+      if (user?.password !== variables?.password) {
         console.log("رمز عبور صحیح نمی‌باشد!");
         return;
       }
 
-      queryClient.setQueryData(["userInfo"], findedUser);
-      localStorage.setItem("userInfo", JSON.stringify(findedUser));
+      queryClient.setQueryData(["userInfo"], user);
+      localStorage.setItem("userInfo", JSON.stringify(user));
 
       if (onSuccess) onSuccess();
     },

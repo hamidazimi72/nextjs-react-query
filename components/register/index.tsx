@@ -29,7 +29,7 @@ export const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={(e) => registerHandler(e)} className="flex flex-col gap-4 w-xs">
+    <form onSubmit={registerHandler} className="flex flex-col gap-4 w-xs">
       <input
         className="border border-neutral-300 rounded p-2 outline-0 w-full"
         placeholder="نام"

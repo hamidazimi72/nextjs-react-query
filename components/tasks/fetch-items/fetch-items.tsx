@@ -15,7 +15,12 @@ export const FetchItems = () => {
     selectedStatus: "",
   });
 
-  const { data } = useGetTasks({ page, perPage, title: filterForm?.title, status: filterForm?.selectedStatus });
+  const { data: response } = useGetTasks({
+    page,
+    perPage,
+    title: filterForm?.title,
+    status: filterForm?.selectedStatus,
+  });
 
   return (
     <div>
@@ -33,8 +38,8 @@ export const FetchItems = () => {
           <div className="col-span-2 border-l border-neutral-300">وضعیت</div>
           <div className="col-span-3"></div>
         </div>
-        {data?.data?.length ? (
-          data?.data.map((item, i) => {
+        {response?.data?.data?.length ? (
+          response?.data?.data.map((item, i) => {
             return (
               <div key={i} className="grid grid-cols-12 *:text-center *:p-2 odd:bg-neutral-50">
                 <div className="col-span-5 border-l border-neutral-300">{item?.title}</div>
@@ -57,7 +62,7 @@ export const FetchItems = () => {
         )}
       </div>
 
-      <Pagination data={data} page={page} setPage={setPage} />
+      <Pagination data={response?.data} page={page} setPage={setPage} />
     </div>
   );
 };

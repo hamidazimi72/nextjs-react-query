@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 import * as API from "@/api";
@@ -15,7 +16,7 @@ type ResultType = {
 
 export const useGetTasks = (
   params: { page: number; perPage: number; title?: string; status?: string },
-  options?: UseQueryOptions<ResultType, Error>,
+  options?: UseQueryOptions<AxiosResponse<ResultType>, Error>,
 ) => {
   const userId: Types.User.FetchAllDto["id"] =
     typeof window !== "undefined" ? JSON.parse(localStorage?.getItem("userInfo") || "{}")?.id : "";
@@ -25,7 +26,7 @@ export const useGetTasks = (
   if (params?.title) queryKey.push(String(params.title));
   if (params?.status) queryKey.push(String(params.status));
 
-  return useQuery<ResultType, Error>({
+  return useQuery<AxiosResponse<ResultType>, Error>({
     queryKey,
     queryFn: () => {
       const queryObject: { userId: string; _page: string; _per_page: string; title?: string; isCompleted?: string } = {
@@ -42,9 +43,7 @@ export const useGetTasks = (
         queryObject.isCompleted = params?.status;
       }
 
-      const queryString: string = `?${new URLSearchParams({ ...queryObject }).toString()}`;
-
-      return API.Task.fetchAll(queryString);
+      return API.Task.fetchAll({ ...queryObject });
     },
     placeholderData: (prevData) => prevData,
     ...options,

@@ -1,12 +1,15 @@
+import { AxiosResponse } from "axios";
 import { useMutation, UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
 import * as API from "@/api";
 import * as Types from "@/types";
 
-export const useDeleteTask = (options?: UseMutationOptions<Types.Task.FetchAllDto, Error, { id: string }>) => {
+export const useDeleteTask = (
+  options?: UseMutationOptions<AxiosResponse<Types.Task.FetchAllDto>, Error, { id: string }>,
+) => {
   const queryClient = useQueryClient();
 
-  const deleteTaskMutation = useMutation<Types.Task.FetchAllDto, Error, { id: string }>({
+  const deleteTaskMutation = useMutation<AxiosResponse<Types.Task.FetchAllDto>, Error, { id: string }>({
     mutationFn: API.Task.remove,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });

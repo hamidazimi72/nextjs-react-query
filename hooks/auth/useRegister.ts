@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import { useMutation, UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
 import * as API from "@/api";
@@ -5,20 +6,31 @@ import * as Types from "@/types";
 
 export const useRegister = (
   onSuccessRegister?: () => void,
-  inquiryOptions?: UseMutationOptions<Types.User.FetchAllDto[], Error, Omit<Types.User.FetchAllDto, "id">>,
-  registerOptions?: UseMutationOptions<Types.User.FetchAllDto, Error, Omit<Types.User.FetchAllDto, "id">>,
+  inquiryOptions?: UseMutationOptions<
+    AxiosResponse<Types.User.FetchAllDto[]>,
+    Error,
+    Omit<Types.User.FetchAllDto, "id">
+  >,
+  registerOptions?: AxiosResponse<
+    UseMutationOptions<Types.User.FetchAllDto>,
+    Error,
+    Omit<Types.User.FetchAllDto, "id">
+  >,
 ) => {
   const queryClient = useQueryClient();
 
   // Inquiry
-  const hasExistingUserMutation = useMutation<Types.User.FetchAllDto[], Error, Omit<Types.User.FetchAllDto, "id">>({
-    mutationFn: (info: Omit<Types.User.FetchAllDto, "id">) => {
-      const cellphoneQuery = `cellphone=${info?.cellphone}`;
-      return API.User.fetchAll({ query: cellphoneQuery });
+  const hasExistingUserMutation = useMutation<
+    AxiosResponse<Types.User.FetchAllDto[]>,
+    Error,
+    Omit<Types.User.FetchAllDto, "id">
+  >({
+    mutationFn: (info) => {
+      return API.User.fetchAll({ cellphone: info?.cellphone });
     },
     onSuccess: (items, info) => {
-      if (items.length) {
-        //
+      if (items?.data.length) {
+        console.log("کاربر با این شماره موبایل وجود دارد.");
       } else {
         userRegisterMutation.mutate({ ...info });
       }
@@ -27,8 +39,12 @@ export const useRegister = (
   });
 
   // Register
-  const userRegisterMutation = useMutation<Types.User.FetchAllDto, Error, Omit<Types.User.FetchAllDto, "id">>({
-    mutationFn: (info: Omit<Types.User.FetchAllDto, "id">) =>
+  const userRegisterMutation = useMutation<
+    AxiosResponse<Types.User.FetchAllDto>,
+    Error,
+    Omit<Types.User.FetchAllDto, "id">
+  >({
+    mutationFn: (info) =>
       API.Auth.register({
         cellphone: +info?.cellphone,
         firstname: info?.firstname,
@@ -36,12 +52,16 @@ export const useRegister = (
         password: info?.password,
       }),
     onSuccess: (res) => {
-      queryClient.setQueryData(["profile"], {
-        id: res?.id,
-        firstname: res?.firstname,
-        lastname: res?.lastname,
-        cellphone: res?.cellphone,
-      });
+      const data = res?.data;
+      const user = {
+        id: data?.id,
+        firstname: data?.firstname,
+        lastname: data?.lastname,
+        cellphone: data?.cellphone,
+      };
+
+      queryClient.setQueryData(["profile"], user);
+      localStorage.setItem("userInfo", JSON.stringify(user));
 
       if (onSuccessRegister) onSuccessRegister();
     },

@@ -1,7 +1,10 @@
+import { AxiosResponse } from "axios";
+
 import { User } from "@/types";
 
-export const fetchAll = async (options?: { query?: string }): Promise<User.FetchAllDto[]> => {
-  const res = await fetch(`http://localhost:9000/users${options?.query ? `?${options?.query}` : ""}`);
+import { axiosClient } from "../config";
 
-  return res.json();
+export const fetchAll = async (params?: { cellphone?: number }): Promise<AxiosResponse<User.FetchAllDto[]>> => {
+  const res = await axiosClient.get("/users", { params: { ...params } });
+  return res;
 };

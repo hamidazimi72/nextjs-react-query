@@ -23,7 +23,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={(e) => loginHandler(e)} className="flex flex-col gap-4 w-xs">
+    <form onSubmit={loginHandler} className="flex flex-col gap-4 w-xs">
       <input
         className="border border-neutral-300 rounded p-2 outline-0 w-full"
         placeholder="شماره موبایل"
@@ -38,7 +38,7 @@ export const LoginForm = () => {
         value={form?.password}
         onChange={(e) => formDispatch((PS) => ({ ...PS, password: e?.target?.value }))}
       />
-      <input className="bg-neutral-300 rounded p-2 w-full" type="submit" value="Login" />
+      <input className="bg-neutral-300 rounded p-2 w-full" type="submit" value="ورود" />
     </form>
   );
 };
